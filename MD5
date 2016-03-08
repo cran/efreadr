@@ -1,0 +1,13 @@
+7f106f352c5df1cbdf5b192b610e19be *DESCRIPTION
+f939c99622a1eee525fca9b37fe5c929 *NAMESPACE
+45a258ad0451588a86f5769581cc6a86 *NEWS
+ff1df73444a48e423b4190867b8cf2d0 *R/efreadr.R
+96899873f7ec60d511a4df34e1765cac *R/read_ef_file.R
+b563c76513be402905d4d0fa4f4789ba *R/read_ef_files.R
+e9a191e59681efe6aeaf741727ec1dab *README.md
+6828701affd6c9ec306faefdbd3b1a33 *inst/extdata/CEIP_EC_L4_d_AFFoo_2003_v01.txt
+a855ee5b5e2f24684ff253b25d7bbcf8 *inst/extdata/CEIP_EC_L4_d_FABar_2015_v02.txt
+33b6736853c6a91237cb4999485cd073 *inst/extdata/CEIP_EC_L4_h_ZZBaz_2012_v01.txt
+eb416a4d612a48c724d8bc2c66623f54 *man/efreadr-package.Rd
+5e20f8c1dba0decf2a2790dd8d3fd88f *man/read_ef_file.Rd
+940a37b76c67055cca2b9dce75e5f2c8 *man/read_ef_files.Rd
