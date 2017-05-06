@@ -2,22 +2,25 @@
 % Please edit documentation in R/read_ef_files.R
 \name{read_ef_files}
 \alias{read_ef_files}
-\title{Load all European Fluxes CSV files in one or more directories, bind all observations and fill missing data with NA_real}
+\title{Load all European Fluxes CSV files in one or more directories, bind all observations in a list of dataframes}
 \usage{
-read_ef_files(dirs = getwd(), level_l = NULL, aggregation = NULL,
-  fill_value = "-9999")
+read_ef_files(dirs = getwd(), only_level = NULL, only_aggr = NULL, ...)
 }
 \arguments{
 \item{dirs}{a vector of directories where fluxes files are looked for. Defaults to current directory.}
 
-\item{level_l}{level of fluxes files (defaults to NULL). Allowed levels are (currently) 3 and 4. When NULL, either L3 and L4 files are looked for.}
+\item{only_level}{levels of fluxes files (defaults to NULL). Allowed levels are (currently) 3 and 4. When NULL, either L3 and L4 files are looked for.}
 
-\item{aggregation}{aggregation of data (defaults to NULL) Allowed aggregations are (currently) "h" (half-hourly) and "d" (daily). When NULL, either "d" and "h" files are looked for.}
+\item{only_aggr}{aggregations of data (defaults to NULL). Allowed aggregations are (currently) "h" (half-hourly) and "d" (daily). When NULL, either "d" and "h" files are looked for.}
 
-\item{fill_value}{a code for a not available (NA) observation in CSV file. When the argument is given (default behaviour) the observations with 'fill_value' values are converted to NA_real}
+\item{...}{additional arguments to be passed to \code{read_ef_file}, specifically \code{fill_value}}
 }
 \value{
-a data frame as loaded from the file, added with 'efreadr_year', 'efreadr_file_name' and 'efreadr_site_id' columns, and 'efreadr_date' column for half-hourly fluxes
+a data frame of 3 variables: \code{level}, \code{aggr}, and \code{fluxes}. \code{fluxes} is a dataframe that
+binds the rows of all fluxes files imported for each level/aggregation combination found.
+Additional columns to \code{fluxes} include metadata parsed from the file names:
+For levels 3 and 4: \code{project}, \code{level}, \code{aggr}, \code{country_id}, \code{site_id}, \code{year}, \code{version}, \code{pathname}, \code{dirname}
+For level 2: \code{project}, \code{level}, \code{type}, \code{country_id}, \code{site_id}, \code{year}, \code{version}, \code{time_res}, \code{pathname}, \code{dirname}
 }
 \description{
 European fluxes CSV files are distributed as one or more zip-compressed files from http://gaia.agraria.unitus.it .
@@ -25,18 +28,13 @@ Once unzipped, all CSV files are to be found in uniquely identifed directories.
 }
 \details{
 All CSV files in that or those directories will be loaded and returned as a single row-wise bound data frame.
-The function assumes the file name pattern is like "^CEIP_EC_Ln_a_[a-zA-Z0-9]{5}_20[0-9]{2}_v[0-9]{2}\\.txt$"
-where n in level and a is aggregation period (optionally given as function arguments)
-Year, file name and site identification are added as fields in the returned data frame
-as 'efreadr_year', 'efreader_file_name' and 'efreader_site_id'.
-
-Optionally (but default behaviour), unavailable measures are converted to 'NA_real' values.
+The function assumes the file name regular expression pattern is like \code{^[A-Z]{4}_EC_Ln_a_[A-Z]{2}[a-ZA-Z]{3}_20[0-9]{2}_v[0-9]{2}\\.txt$}
+where n is level \code{[1-4]} and a is aggregation period \code{[hdwm]} (optionally given as function arguments)
 }
 \note{
-All files in the same directory should belong to the same aggregation/level
-combination in order to row-wise build a consistent dataframe. Note that when 'level_l'
-and/or 'aggregation' arguments are not given, all files will be loaded for in the directory,
-regardless of their level/aggregation.
+Files in the same directory may belong to different aggregation/level
+combinations. The returned dataframe will keep aggregation/level
+combinations in separate rows.
 
 For semi-hourly L4 aggregation (i.e. "h" aggregation in file name) the last row is
 reported as month 1, day 1, hour 00:00. A normal date conversion would convert this date to
@@ -45,7 +43,6 @@ following year. Therefore a class date field ('efreader_date') is added to the r
 date (ie: January 1st of the following year).
 }
 \examples{
-dir_name <- system.file("extdata", package = "efreadr")
+dir_name <- system.file(package = "efreadr", "examples")
 read_ef_files(dir_name)
 }
-

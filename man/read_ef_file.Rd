@@ -4,13 +4,20 @@
 \alias{read_ef_file}
 \title{Load a CSV file from the European Flux Database}
 \usage{
-read_ef_file(file_name)
+read_ef_file(file_name, aggregation = NA_character_, year = NA_integer_,
+  fill_value = -9999L)
 }
 \arguments{
 \item{file_name}{Full path to 1 fluxes file}
+
+\item{aggregation}{character string, aggregation of the flux file to be imported (default \code{NA_character_}). This is important to properly define variable types for each aggregation type. When \code{NA_character_} it is assumed no aggregation (eg L2 files).}
+
+\item{year}{integer value (default \code{NA_integer}). Important to correctly add \code{efreadr_date} field}
+
+\item{fill_value}{a code for a not available (\code{NA}) observation in CSV file. All the observations with 'fill_value' values are converted to \code{NA}s during import. Default is -9999L.}
 }
 \value{
-a data frame as loaded from the file, added with 'efreadr_year', 'efreadr_file_name' and 'efreadr_site_id' columns, and 'efreadr_date' column for half-hourly fluxes
+a data frame as loaded from the file, added with 'pathname' column, and 'efreadr_date' column for half-hourly fluxes files
 }
 \description{
 File name is parsed to extract year, site identification and aggregation type.
@@ -18,19 +25,25 @@ The file name must point to a valid European Fluxes file, in CSV format and must
 resolve to a valid file format name.
 }
 \details{
-Year, file name and site identification are added as fields in the returned data frame
-as 'efreadr_year', 'efreader_file_name' and 'efreader_site_id'.
+File name is added as a field in the returned data frame
+as  \code{pathname}. The \code{pathname} variable may be used to join a dataframe with
+file metadata such as year, site code, level, aggregation, as \code{reaf_ef_files} does.
+
+The fluxes files code not available measures as -9999 (integer variables) or -9999.00 (floating point variables).
+Default behaviour of \code{read_ef_file} is to treat them as \code{NA}s. All -9999L, and -9999.0, -9999.00,
+-9999.000 values are converted to \code{NA} during import of files.
+Occasionally, -9999.00 (floting point representation of NA) appear in variables that are inherently integer
+(i.e. sqc variables in daily flux file). This forces a type conversion of the entire variable to \code{double}.
 }
 \note{
 For semi-hourly L4 aggregation (i.e. "h" aggregation in file name) the last row is
 reported as month 1, day 1, hour 00:00. A normal date conversion would convert this date to
 be the very first half-hour in January 1st of the current year whereas it should be the first half-hour of the
 January 1st of the following year.
-Therefore a class date field ('efreader_date') is added to the returned data frame holding the correct
+Therefore a class date field (\code{efreader_date}) is added to the returned data frame holding the correct
 date (ie: 1st January of the following year).
 }
 \examples{
-file_name <- system.file("extdata", "CEIP_EC_L4_d_FABar_2015_v02.txt", package = "efreadr")
+file_name <- system.file(package = "efreadr", "examples", "CEIP_EC_L4_d_FABar_2015_v02.txt")
 read_ef_file(file_name)
 }
-
